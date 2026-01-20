@@ -1,0 +1,815 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>GymVerse — Admin</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+
+<style>
+  :root{
+    --bg0:#050816;
+    --bg1:#070b1f;
+    --card: rgba(255,255,255,.06);
+    --card2: rgba(255,255,255,.04);
+    --stroke: rgba(255,255,255,.10);
+    --text:#eaf0ff;
+    --muted: rgba(234,240,255,.72);
+    --brand1:#6B5CFF;
+    --brand2:#21D4A8;
+    --danger:#ef4444;
+    --ok:#22c55e;
+    --warn:#f59e0b;
+    --shadow: 0 18px 60px rgba(0,0,0,.45);
+    --radius:18px;
+  }
+
+  *{ box-sizing:border-box; }
+  html,body{ height:100%; }
+  body{
+    margin:0;
+    font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+    color: var(--text);
+    background:
+      radial-gradient(900px 450px at 15% 5%, rgba(33,212,168,.12), transparent 60%),
+      radial-gradient(900px 450px at 85% 15%, rgba(107,92,255,.16), transparent 60%),
+      linear-gradient(180deg, #030712, #081229, #0b1536);
+  }
+
+  a{ color:inherit; text-decoration:none; }
+  button,input,select,textarea{ font-family:inherit; }
+  .hidden{ display:none !important; }
+
+  /* ---------- Auth ---------- */
+  .authWrap{
+    min-height:100%;
+    display:grid;
+    place-items:center;
+    padding: 24px;
+  }
+  .authCard{
+    width: min(520px, 100%);
+    background: linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.03));
+    border: 1px solid rgba(255,255,255,.10);
+    border-radius: 22px;
+    box-shadow: var(--shadow);
+    padding: 20px;
+  }
+  .brandRow{
+    display:flex; align-items:center; gap:12px;
+    margin-bottom: 10px;
+  }
+  .logo{
+    width:44px; height:44px; border-radius: 16px;
+    display:grid; place-items:center;
+    background: linear-gradient(135deg, rgba(33,212,168,.22), rgba(107,92,255,.22));
+    border:1px solid rgba(255,255,255,.12);
+    font-weight:1000;
+  }
+  .brandRow h1{
+    margin:0;
+    font-size: 18px;
+    letter-spacing:.3px;
+    font-weight: 1000;
+    line-height:1.1;
+  }
+  .brandRow p{
+    margin:2px 0 0;
+    color: var(--muted);
+    font-size: 13px;
+    line-height:1.3;
+  }
+  .authGrid{ display:grid; gap: 12px; margin-top: 14px; }
+  .field label{
+    display:block;
+    font-size: 13px;
+    color: var(--muted);
+    margin-bottom: 7px;
+  }
+  .field input{
+    width:100%;
+    padding: 12px 12px;
+    border-radius: 14px;
+    border: 1px solid rgba(255,255,255,.12);
+    background: rgba(0,0,0,.22);
+    color: var(--text);
+    outline:none;
+    transition:.2s ease;
+  }
+  .field input:focus{
+    border-color: rgba(33,212,168,.45);
+    box-shadow: 0 0 0 4px rgba(33,212,168,.10);
+  }
+  .row{
+    display:flex; align-items:center; justify-content:space-between;
+    gap: 10px;
+    flex-wrap:wrap;
+  }
+  .check{
+    display:flex; align-items:center; gap:10px;
+    color: rgba(234,240,255,.80);
+    font-size: 13px;
+    user-select:none;
+  }
+  .check input{ width:18px; height:18px; accent-color: var(--brand2); }
+
+  .btn{
+    border:1px solid rgba(255,255,255,.12);
+    background: rgba(255,255,255,.06);
+    color:#fff;
+    padding: 12px 14px;
+    border-radius: 14px;
+    cursor:pointer;
+    font-weight:900;
+    transition:.2s ease;
+  }
+  .btn:hover{ transform: translateY(-1px); background: rgba(255,255,255,.10); }
+  .btn:active{ transform: translateY(0); }
+  .btnPrimary{
+    border:none;
+    color:#07101f;
+    background: linear-gradient(135deg, var(--brand1), var(--brand2));
+    box-shadow: 0 14px 34px rgba(33, 212, 168, 0.18);
+  }
+
+  .msg{
+    margin-top: 10px;
+    color: var(--muted);
+    font-size: 13px;
+    line-height:1.45;
+  }
+
+  /* ---------- App layout ---------- */
+  .app{
+    min-height:100%;
+    display:grid;
+    grid-template-columns: 280px 1fr;
+  }
+  @media (max-width: 980px){
+    .app{ grid-template-columns: 1fr; }
+  }
+
+  .sidebar{
+    position: sticky;
+    top:0;
+    height:100vh;
+    padding: 14px;
+    border-right: 1px solid rgba(255,255,255,.08);
+    background: rgba(10, 12, 18, 0.55);
+    backdrop-filter: blur(12px);
+  }
+  @media (max-width: 980px){
+    .sidebar{ position:relative; height:auto; border-right:none; border-bottom:1px solid rgba(255,255,255,.08); }
+  }
+
+  .sideBrand{
+    display:flex; align-items:center; gap:12px;
+    padding: 10px 10px 14px;
+  }
+  .sideBrand b{ font-size: 18px; letter-spacing:.3px; }
+  .sideBrand small{ display:block; margin-top:2px; color: var(--muted); font-weight:700; }
+
+  .nav{
+    display:grid;
+    gap: 8px;
+    margin-top: 6px;
+  }
+  .nav button{
+    width:100%;
+    text-align:left;
+    padding: 12px 12px;
+    border-radius: 14px;
+    border: 1px solid rgba(255,255,255,.10);
+    background: rgba(255,255,255,.04);
+    color: rgba(255,255,255,.92);
+    font-weight: 900;
+    cursor:pointer;
+    transition:.2s ease;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+  }
+  .nav button:hover{ background: rgba(255,255,255,.10); transform: translateY(-1px); }
+  .nav button.active{
+    border:none;
+    color:#07101f;
+    background: linear-gradient(135deg, var(--brand1), var(--brand2));
+  }
+  .nav .hint{
+    font-size: 12px;
+    opacity:.75;
+    font-weight: 1000;
+  }
+
+  .main{
+    padding: 16px;
+  }
+  .topbar{
+    display:flex;
+    gap: 12px;
+    align-items:center;
+    justify-content:space-between;
+    flex-wrap:wrap;
+    margin-bottom: 14px;
+  }
+  .search{
+    flex:1;
+    min-width: 220px;
+    display:flex; gap:10px; align-items:center;
+    padding: 10px 12px;
+    border-radius: 16px;
+    background: rgba(255,255,255,.05);
+    border: 1px solid rgba(255,255,255,.10);
+  }
+  .search input{
+    width:100%;
+    border:0;
+    outline:none;
+    background: transparent;
+    color: var(--text);
+    font-weight: 800;
+  }
+  .pill{
+    padding: 8px 10px;
+    border-radius: 999px;
+    border: 1px solid rgba(255,255,255,.10);
+    background: rgba(255,255,255,.05);
+    color: rgba(255,255,255,.88);
+    font-size: 12px;
+    font-weight: 900;
+  }
+
+  .grid{
+    display:grid;
+    gap: 14px;
+  }
+  @media (min-width: 1100px){
+    .grid.cols-4{ grid-template-columns: repeat(4, 1fr); }
+    .grid.cols-3{ grid-template-columns: repeat(3, 1fr); }
+    .grid.cols-2{ grid-template-columns: repeat(2, 1fr); }
+  }
+
+  .card{
+    background: linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.03));
+    border: 1px solid rgba(255,255,255,.10);
+    border-radius: 18px;
+    box-shadow: var(--shadow);
+    padding: 14px;
+  }
+  .card h2{
+    margin:0 0 8px;
+    font-size: 16px;
+    letter-spacing:.2px;
+    font-weight: 1000;
+  }
+  .sub{
+    margin:0 0 12px;
+    color: var(--muted);
+    font-size: 13px;
+    line-height: 1.5;
+  }
+
+  .kpi{
+    display:flex; align-items:flex-start; justify-content:space-between; gap: 12px;
+  }
+  .kpi .v{
+    font-size: 26px;
+    font-weight: 1100;
+    letter-spacing:-.3px;
+    margin-top: 4px;
+  }
+  .kpi .t{
+    color: var(--muted);
+    font-size: 13px;
+    font-weight: 900;
+  }
+  .kpi .tag{
+    font-size: 12px;
+    font-weight: 1100;
+    padding: 8px 10px;
+    border-radius: 999px;
+    border: 1px solid rgba(255,255,255,.12);
+    background: rgba(0,0,0,.25);
+  }
+
+  .formGrid{
+    display:grid;
+    gap: 12px;
+  }
+  @media (min-width: 900px){
+    .formGrid.cols-2{ grid-template-columns: 1fr 1fr; }
+    .formGrid.cols-3{ grid-template-columns: repeat(3, 1fr); }
+  }
+  .field2 label{
+    display:block; margin-bottom:7px;
+    font-size: 13px; color: var(--muted);
+    font-weight: 900;
+  }
+  .field2 input,.field2 select,.field2 textarea{
+    width:100%;
+    padding: 12px 12px;
+    border-radius: 14px;
+    border: 1px solid rgba(255,255,255,.12);
+    background: rgba(0,0,0,.22);
+    color: var(--text);
+    outline:none;
+    transition:.2s ease;
+  }
+  .field2 textarea{ min-height: 90px; resize: vertical; }
+  .field2 input:focus,.field2 select:focus,.field2 textarea:focus{
+    border-color: rgba(33,212,168,.45);
+    box-shadow: 0 0 0 4px rgba(33,212,168,.10);
+  }
+
+  .actions{ display:flex; gap: 10px; flex-wrap:wrap; margin-top: 10px; }
+
+  /* Table */
+  .tableWrap{ overflow:auto; border-radius: 14px; border: 1px solid rgba(255,255,255,.10); }
+  table{ width:100%; border-collapse: collapse; min-width: 860px; }
+  th,td{
+    padding: 10px 10px;
+    border-bottom: 1px solid rgba(255,255,255,.08);
+    text-align:center;
+    font-size: 12px;
+    white-space: nowrap;
+  }
+  th{
+    position: sticky;
+    top: 0;
+    background: rgba(0,0,0,.25);
+    backdrop-filter: blur(10px);
+    font-weight: 1000;
+    letter-spacing:.2px;
+  }
+  td.left, th.left{ text-align:left; white-space: normal; }
+  .badge{
+    display:inline-flex;
+    align-items:center;
+    gap: 8px;
+    padding: 7px 10px;
+    border-radius: 999px;
+    font-size: 12px;
+    font-weight: 1000;
+    border: 1px solid rgba(255,255,255,.10);
+    background: rgba(255,255,255,.05);
+  }
+  .bPending{ border-color: rgba(245,158,11,.30); background: rgba(245,158,11,.12); }
+  .bConfirmed{ border-color: rgba(34,197,94,.30); background: rgba(34,197,94,.12); }
+  .bDone{ border-color: rgba(59,130,246,.30); background: rgba(59,130,246,.12); }
+  .bCancelled{ border-color: rgba(239,68,68,.30); background: rgba(239,68,68,.12); }
+
+  .miniBtn{
+    padding: 7px 10px;
+    border-radius: 12px;
+    border:1px solid rgba(255,255,255,.12);
+    background: rgba(255,255,255,.06);
+    color:#fff;
+    font-weight: 1000;
+    cursor:pointer;
+    transition:.2s ease;
+    margin: 2px;
+  }
+  .miniBtn:hover{ transform: translateY(-1px); background: rgba(255,255,255,.10); }
+  .miniPrimary{ border:none; color:#07101f; background: linear-gradient(135deg, var(--brand1), var(--brand2)); }
+  .miniDanger{ border-color: rgba(239,68,68,.35); background: rgba(239,68,68,.10); }
+
+  .note{
+    color: rgba(234,240,255,.68);
+    font-size: 12px;
+    line-height: 1.45;
+    margin-top: 10px;
+  }
+
+  .toast{
+    position: fixed;
+    right: 16px;
+    bottom: 16px;
+    z-index: 9999;
+    max-width: 420px;
+    padding: 12px 14px;
+    border-radius: 16px;
+    border: 1px solid rgba(255,255,255,.14);
+    background: rgba(0,0,0,.45);
+    backdrop-filter: blur(12px);
+    box-shadow: var(--shadow);
+    font-weight: 900;
+    color: #fff;
+    display:none;
+  }
+</style>
+</head>
+<body>
+
+<!-- ========== LOGIN VIEW ========== -->
+<div class="authWrap" id="authView">
+  <div class="authCard">
+    <div class="brandRow">
+      <div class="logo">GV</div>
+      <div>
+        <h1>GymVerse Admin</h1>
+        <p>Secure local admin panel (login persists across refresh & tabs).</p>
+      </div>
+    </div>
+
+    <form id="loginForm" class="authGrid" autocomplete="off">
+      <div class="field">
+        <label>Username</label>
+        <input id="loginUser" placeholder="admin" />
+      </div>
+
+      <div class="field">
+        <label>Password</label>
+        <input id="loginPass" type="password" placeholder="••••••••" />
+      </div>
+
+      <div class="row">
+        <label class="check">
+          <input id="rememberMe" type="checkbox" checked />
+          Keep me signed in (30 days)
+        </label>
+        <span class="pill" id="authHint">Default: Abdullah / 2410</span>
+      </div>
+
+      <button class="btn btnPrimary" type="submit">Login</button>
+      <div class="msg" id="loginMsg"></div>
+      <div class="msg" style="opacity:.9">
+        ⚠️ Note: This is front-end only (localStorage). For real security, you need a backend auth system.
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- ========== APP VIEW ========== -->
+<div class="app hidden" id="appView">
+  <aside class="sidebar">
+    <div class="sideBrand">
+      <div class="logo">GV</div>
+      <div>
+        <b>GymVerse</b>
+        <small>Admin Panel</small>
+      </div>
+    </div>
+
+    <div class="nav" id="sideNav">
+      <button data-view="dashboard" class="active"><span>📊 Dashboard</span><span class="hint">Stats</span></button>
+      <button data-view="packages"><span>💳 Packages</span><span class="hint">CRUD</span></button>
+      <button data-view="offers"><span>🏷️ Offers</span><span class="hint">Discount</span></button>
+      <button data-view="trainers"><span>🧑‍🏫 Trainers</span><span class="hint">CRUD</span></button>
+      <button data-view="members"><span>👥 Members</span><span class="hint">List</span></button>
+      <button data-view="appointments"><span>📅 Appointments</span><span class="hint">Manage</span></button>
+      <button data-view="settings"><span>⚙️ Settings</span><span class="hint">Admin</span></button>
+    </div>
+
+    <div class="note">
+      ✔ Data stored in localStorage keys:<br>
+      <b>gv_packages</b>, <b>gv_trainers</b>, <b>gv_members</b>, <b>gv_appointments</b><br><br>
+      This admin panel also migrates older keys automatically.
+    </div>
+  </aside>
+
+  <main class="main">
+    <div class="topbar">
+      <div class="search">
+        <span style="opacity:.8">🔎</span>
+        <input id="globalSearch" placeholder="Search in current view..." />
+      </div>
+      <div style="display:flex; gap:10px; flex-wrap:wrap;">
+        <span class="pill" id="whoami">Admin</span>
+        <button class="btn" id="exportBtn">Export JSON</button>
+        <button class="btn btnPrimary" id="logoutBtn">Logout</button>
+      </div>
+    </div>
+
+    <!-- Dashboard -->
+    <section class="view" id="view-dashboard">
+      <div class="grid cols-4" id="kpiGrid"></div>
+
+      <div class="grid cols-2" style="margin-top:14px;">
+        <div class="card">
+          <h2>Members Trend (Last 14 Days)</h2>
+          <p class="sub">New joins per day based on <b>gv_members</b>.</p>
+          <canvas id="chartJoins" height="140"></canvas>
+        </div>
+
+        <div class="card">
+          <h2>Appointments Status</h2>
+          <p class="sub">Pending / Confirmed / Done / Cancelled.</p>
+          <canvas id="chartAppts" height="140"></canvas>
+        </div>
+      </div>
+
+      <div class="grid cols-2" style="margin-top:14px;">
+        <div class="card">
+          <h2>Members by Plan</h2>
+          <p class="sub">Which package is most popular.</p>
+          <canvas id="chartPlans" height="140"></canvas>
+        </div>
+
+        <div class="card">
+          <h2>Upcoming Appointments</h2>
+          <p class="sub">Next 10 scheduled appointments.</p>
+          <div class="tableWrap">
+            <table>
+              <thead>
+                <tr>
+                  <th class="left">Member</th>
+                  <th>Date</th>
+                  <th>Time</th>
+                  <th class="left">Trainer</th>
+                  <th>Status</th>
+                </tr>
+              </thead>
+              <tbody id="upcomingRows"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Packages -->
+    <section class="view hidden" id="view-packages">
+      <div class="card">
+        <h2>Packages (Add / Edit / Delete)</h2>
+        <p class="sub">Discount rule enforced: <b>newPrice must be less than oldPrice</b>.</p>
+
+        <form id="pkgForm" class="formGrid cols-3">
+          <input type="hidden" id="pkgId" />
+
+          <div class="field2">
+            <label>Package Name</label>
+            <input id="pkgName" placeholder="e.g. Pro Monthly" />
+          </div>
+
+          <div class="field2">
+            <label>Category</label>
+            <input id="pkgCat" placeholder="Monthly / Annual" />
+          </div>
+
+          <div class="field2">
+            <label>Old Price (PKR)</label>
+            <input id="pkgOld" placeholder="e.g. 18000" />
+          </div>
+
+          <div class="field2">
+            <label>New Price (PKR)</label>
+            <input id="pkgNew" placeholder="e.g. 13999" />
+          </div>
+
+          <div class="field2" style="grid-column:1/-1;">
+            <label>Description</label>
+            <textarea id="pkgDesc" placeholder="Short description..."></textarea>
+          </div>
+
+          <div class="field2" style="grid-column:1/-1;">
+            <label>Features (comma separated)</label>
+            <input id="pkgFeatures" placeholder="Full gym access, 4 classes/week, Body scan..." />
+          </div>
+
+          <div class="actions" style="grid-column:1/-1;">
+            <button class="btn btnPrimary" type="submit" id="pkgSaveBtn">Save Package</button>
+            <button class="btn" type="button" id="pkgResetBtn">Clear</button>
+          </div>
+        </form>
+
+        <div class="note" id="pkgNote"></div>
+      </div>
+
+      <div class="card" style="margin-top:14px;">
+        <h2>Packages List</h2>
+        <div class="tableWrap">
+          <table>
+            <thead>
+              <tr>
+                <th class="left">Name</th>
+                <th>Category</th>
+                <th>Old</th>
+                <th>New</th>
+                <th class="left">Description</th>
+                <th class="left">Features</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody id="pkgRows"></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- Offers -->
+    <section class="view hidden" id="view-offers">
+      <div class="card">
+        <h2>Apply Offer / Discount</h2>
+        <p class="sub">Applies discount to package newPrice and saves offer history.</p>
+
+        <form id="offerForm" class="formGrid cols-3">
+          <div class="field2">
+            <label>Select Package</label>
+            <select id="offerPkg"></select>
+          </div>
+
+          <div class="field2">
+            <label>Offer Description</label>
+            <input id="offerDesc" placeholder="e.g. New Year Deal - 20% OFF" />
+          </div>
+
+          <div class="field2">
+            <label>New Discounted Price (PKR)</label>
+            <input id="offerPrice" placeholder="e.g. 11999" />
+          </div>
+
+          <div class="actions" style="grid-column:1/-1;">
+            <button class="btn btnPrimary" type="submit">Apply Offer</button>
+          </div>
+        </form>
+
+        <div class="note">Rule: discounted price must be smaller than current oldPrice AND current newPrice.</div>
+      </div>
+
+      <div class="card" style="margin-top:14px;">
+        <h2>Offer History</h2>
+        <div class="tableWrap">
+          <table>
+            <thead>
+              <tr>
+                <th class="left">Package</th>
+                <th>Description</th>
+                <th>Old</th>
+                <th>New</th>
+                <th>Applied At</th>
+              </tr>
+            </thead>
+            <tbody id="offerRows"></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- Trainers -->
+    <section class="view hidden" id="view-trainers">
+      <div class="card">
+        <h2>Trainers (Add / Edit / Delete)</h2>
+        <p class="sub">Trainers appear on your index page and appointment selection.</p>
+
+        <form id="trainerForm" class="formGrid cols-3">
+          <input type="hidden" id="tId" />
+
+          <div class="field2">
+            <label>Trainer Name</label>
+            <input id="tName" placeholder="e.g. Ayesha Khan" />
+          </div>
+
+          <div class="field2">
+            <label>Specialty</label>
+            <input id="tSpec" placeholder="e.g. Strength & Conditioning" />
+          </div>
+
+          <div class="field2">
+            <label>Tags (comma separated)</label>
+            <input id="tTags" placeholder="Hypertrophy, Form, Power" />
+          </div>
+
+          <div class="actions" style="grid-column:1/-1;">
+            <button class="btn btnPrimary" type="submit">Save Trainer</button>
+            <button class="btn" type="button" id="tResetBtn">Clear</button>
+          </div>
+        </form>
+      </div>
+
+      <div class="card" style="margin-top:14px;">
+        <h2>Trainers List</h2>
+        <div class="tableWrap">
+          <table>
+            <thead>
+              <tr>
+                <th class="left">Name</th>
+                <th class="left">Specialty</th>
+                <th class="left">Tags</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody id="tRows"></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- Members -->
+    <section class="view hidden" id="view-members">
+      <div class="card">
+        <h2>Members (Joined Users)</h2>
+        <p class="sub">Shows all membership submissions from <b>joinnow.html</b>.</p>
+        <div class="tableWrap">
+          <table>
+            <thead>
+              <tr>
+                <th class="left">Name</th>
+                <th>Phone</th>
+                <th class="left">Email</th>
+                <th>Plan</th>
+                <th class="left">Notes</th>
+                <th>Joined At</th>
+              </tr>
+            </thead>
+            <tbody id="memberRows"></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- Appointments -->
+    <section class="view hidden" id="view-appointments">
+      <div class="card">
+        <h2>Appointments</h2>
+        <p class="sub">Confirm / Mark Done / Cancel. (Email sending is simulated using alert.)</p>
+
+        <div class="row" style="margin-bottom:10px;">
+          <div class="pill" id="apptSummary">—</div>
+          <div style="display:flex; gap:10px; flex-wrap:wrap;">
+            <button class="btn" id="seedDoneBtn" type="button">Seed Dummy Done</button>
+            <button class="btn" id="clearApptsBtn" type="button">Clear All</button>
+          </div>
+        </div>
+
+        <div class="tableWrap">
+          <table>
+            <thead>
+              <tr>
+                <th class="left">User</th>
+                <th class="left">Email</th>
+                <th>Date</th>
+                <th>Time</th>
+                <th class="left">Trainer</th>
+                <th class="left">Purpose</th>
+                <th>Status</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody id="apptRows"></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- Settings -->
+    <section class="view hidden" id="view-settings">
+      <div class="card">
+        <h2>Admin Settings</h2>
+        <p class="sub">Change admin password + import/export data.</p>
+
+        <div class="grid cols-2">
+          <div class="card" style="box-shadow:none;">
+            <h2>Change Password</h2>
+            <p class="sub">This updates credentials stored in localStorage.</p>
+
+            <form id="pwForm" class="formGrid cols-2">
+              <div class="field2">
+                <label>Current Password</label>
+                <input id="pwCurrent" type="password" />
+              </div>
+              <div class="field2">
+                <label>New Password</label>
+                <input id="pwNew" type="password" />
+              </div>
+              <div class="field2" style="grid-column:1/-1;">
+                <label>Confirm New Password</label>
+                <input id="pwNew2" type="password" />
+              </div>
+
+              <div class="actions" style="grid-column:1/-1;">
+                <button class="btn btnPrimary" type="submit">Update Password</button>
+              </div>
+            </form>
+
+            <div class="note" id="pwMsg"></div>
+          </div>
+
+          <div class="card" style="box-shadow:none;">
+            <h2>Import JSON</h2>
+            <p class="sub">Paste exported JSON here to restore data.</p>
+
+            <div class="field2">
+              <label>JSON Data</label>
+              <textarea id="importBox" placeholder='{"gv_packages":[...],"gv_trainers":[...],"gv_members":[...],"gv_appointments":[...],"gv_offers":[...]}'></textarea>
+            </div>
+
+            <div class="actions">
+              <button class="btn btnPrimary" type="button" id="importBtn">Import</button>
+              <button class="btn" type="button" id="wipeAllBtn">Wipe All Data</button>
+            </div>
+
+            <div class="note" id="importMsg"></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+</div>
+
+<div class="toast" id="toast"></div>
+<script src="../js/adminpanel.js"></script>
+</body>
+</html>

@@ -1,0 +1,226 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>GymVerse — Home</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+
+
+<link rel="stylesheet" href="../css/home.css">
+
+</head>
+<body>
+
+  <!-- Navbar -->
+  <header class="gv-nav">
+    <div class="gv-container">
+      <div class="gv-nav-inner">
+        <div class="gv-brand" onclick="goTo('index.html')">
+          <div class="gv-logo">GV</div>
+          <b>GymVerse</b>
+        </div>
+
+        <div class="gv-links">
+          <button class="gv-link" onclick="goTo('#home')">Home</button>
+          <button class="gv-link" onclick="goTo('#gallery')">Gallery</button>
+          <button class="gv-link" onclick="goTo('#trainers')">Trainers</button>
+          <button class="gv-link" onclick="goTo('#contact')">Contact</button>
+          <button class="gv-link" onclick="goTo('packages.html')">Packages</button>
+        </div>
+
+        <div class="gv-actions">
+          <button class="gv-btn" onclick="goTo('appointment.html')">Book Appointment</button>
+          <button class="gv-btn gv-btn-primary" onclick="goTo('joinnow.html')">Join Now</button>
+        </div>
+
+        <button class="gv-btn gv-menu" id="gvMenuBtn">☰</button>
+      </div>
+    </div>
+
+    <!-- Mobile dropdown -->
+    <div class="gv-mobile" id="gvMobileMenu">
+      <a href="#" onclick="goTo('#home');return false;">Home</a>
+      <a href="#" onclick="goTo('#gallery');return false;">Gallery</a>
+      <a href="#" onclick="goTo('#trainers');return false;">Trainers</a>
+      <a href="#" onclick="goTo('#contact');return false;">Contact</a>
+      <a href="packages.html">Packages</a>
+      <a href="appointment.html">Book Appointment</a>
+      <a class="primary" href="joinnow.html">Join Now</a>
+    </div>
+  </header>
+
+  <!-- Hero / Slider -->
+  <main id="home" class="gv-hero">
+    <div class="gv-container">
+      <div class="gv-slider" id="gvSlider">
+        <div class="gv-track" id="gvTrack">
+
+          <section class="gv-slide">
+            <div class="gv-left">
+              <div class="gv-badge"><span class="p"></span> Premium Fitness Experience</div>
+              <h1 class="gv-hero-title">Train smarter.<br/>Get results faster.</h1>
+              <p class="gv-hero-desc">
+                Modern gym website layout with separate pages for packages, join now, and appointments.
+                Smooth slider + consistent UI.
+              </p>
+              <div class="gv-hero-actions">
+                <button class="gv-btn gv-btn-primary" onclick="goTo('joinnow.html')">Join Now</button>
+                <button class="gv-btn" onclick="goTo('packages.html')">View Packages</button>
+              </div>
+            </div>
+            <div class="gv-visual" aria-hidden="true"></div>
+          </section>
+
+          <section class="gv-slide">
+            <div class="gv-left">
+              <div class="gv-badge"><span class="p"></span> Coaching & Guidance</div>
+              <h2 class="gv-hero-title">Your coach.<br/>Your plan.</h2>
+              <p class="gv-hero-desc">
+                Choose a trainer, book appointment, and track inquiries — all stored in localStorage.
+              </p>
+              <div class="gv-hero-actions">
+                <button class="gv-btn gv-btn-primary" onclick="goTo('appointment.html')">Book Appointment</button>
+                <button class="gv-btn" onclick="goTo('#trainers')">Meet Trainers</button>
+              </div>
+            </div>
+            <div class="gv-visual" aria-hidden="true"></div>
+          </section>
+
+          <section class="gv-slide">
+            <div class="gv-left">
+              <div class="gv-badge"><span class="p"></span> Strong Community</div>
+              <h2 class="gv-hero-title">Consistency<br/>beats motivation.</h2>
+              <p class="gv-hero-desc">
+                Add your real gym photos in the Gallery section (replace placeholders anytime).
+              </p>
+              <div class="gv-hero-actions">
+                <button class="gv-btn gv-btn-primary" onclick="goTo('#gallery')">View Gallery</button>
+                <button class="gv-btn" onclick="goTo('joinnow.html')">Start Today</button>
+              </div>
+            </div>
+            <div class="gv-visual" aria-hidden="true"></div>
+          </section>
+
+        </div>
+
+        <div class="gv-controls">
+          <div class="gv-navbtns">
+            <button class="gv-iconbtn" id="gvPrev" aria-label="Previous slide">‹</button>
+            <button class="gv-iconbtn" id="gvNext" aria-label="Next slide">›</button>
+          </div>
+          <div class="gv-dots" id="gvDots" aria-label="Slider dots"></div>
+        </div>
+
+      </div>
+    </div>
+  </main>
+
+  <!-- Gallery (Gym pictures section instead of packages) -->
+  <section id="gallery" class="gv-section">
+    <div class="gv-container">
+      <h2 class="gv-section-title">Gym Gallery</h2>
+      <p class="gv-section-sub">Replace these blocks with your real gym images later (you can use &lt;img&gt; or background-image).</p>
+
+      <div class="gv-gallery">
+        <div class="gv-photo gv-col-8 lg">
+          <div class="cap">Main Floor • Strength Zone</div>
+        </div>
+        <div class="gv-photo gv-col-4 sm">
+          <div class="cap">Cardio Area</div>
+        </div>
+        <div class="gv-photo gv-col-4 sm">
+          <div class="cap">Free Weights</div>
+        </div>
+        <div class="gv-photo gv-col-4 sm">
+          <div class="cap">Functional Training</div>
+        </div>
+        <div class="gv-photo gv-col-4 sm">
+          <div class="cap">Locker & Shower</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Trainers -->
+  <section id="trainers" class="gv-section">
+    <div class="gv-container">
+      <h2 class="gv-section-title">Our Trainers</h2>
+      <p class="gv-section-sub">Profiles are loaded from localStorage (dummy trainers are auto-seeded).</p>
+
+      <div class="gv-trainers" id="trainersList"></div>
+
+      <div style="margin-top:14px;display:flex;gap:10px;flex-wrap:wrap;">
+        <button class="gv-btn gv-btn-primary" onclick="goTo('appointment.html')">Book with a Trainer</button>
+        <button class="gv-btn" onclick="goTo('joinnow.html')">Join Membership</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- Contact -->
+  <section id="contact" class="gv-section">
+    <div class="gv-container">
+      <div class="gv-card" style="padding:18px;">
+        <h2 class="gv-section-title" style="margin-top:0;">Contact</h2>
+        <p class="gv-section-sub" style="margin-bottom:0;">
+          📍 Karachi • ⏱️ 6am – 12am • 📞 +92-XXX-XXXXXXX • ✉️ info@gymverse.com
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer (full width) -->
+  <footer class="gv-footer">
+    <div class="gv-container">
+      <div class="gv-footer-grid">
+        <div>
+          <h3 class="gv-foot-title">GymVerse</h3>
+          <p class="gv-foot-text">A clean, modern gym website UI with slider, gallery, trainers, and separate pages for packages/join/appointments.</p>
+          <div style="display:flex;gap:10px;flex-wrap:wrap;">
+            <button class="gv-btn gv-btn-primary" onclick="goTo('joinnow.html')">Join Now</button>
+            <button class="gv-btn" onclick="goTo('appointment.html')">Book Appointment</button>
+          </div>
+        </div>
+
+        <div>
+          <h4 class="gv-foot-heading">Quick Links</h4>
+          <div class="gv-foot-links">
+            <a href="#" onclick="goTo('#home');return false;">Home</a>
+            <a href="#" onclick="goTo('#gallery');return false;">Gallery</a>
+            <a href="#" onclick="goTo('#trainers');return false;">Trainers</a>
+            <a href="packages.html">Packages</a>
+          </div>
+        </div>
+
+        <div>
+          <h4 class="gv-foot-heading">Pages</h4>
+          <div class="gv-foot-links">
+            <a href="joinnow.html">Join Now</a>
+            <a href="appointment.html">Book Appointment</a>
+            <a href="packages.html">Packages</a>
+          </div>
+        </div>
+      </div>
+
+      <div class="gv-foot-bottom">
+        <div>© <span id="year"></span> GymVerse. All rights reserved.</div>
+        <div style="display:flex;gap:10px;flex-wrap:wrap;">
+          <a href="#" onclick="goTo('#home');return false;">Top</a>
+          <span style="opacity:.4;">•</span>
+          <a href="packages.html">Packages</a>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    document.getElementById("year").textContent = new Date().getFullYear();
+  </script>
+
+<script src="../js/home.js"></script>
+
+</body>
+</html>

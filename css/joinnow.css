@@ -1,0 +1,34 @@
+/* =========================
+   Join Now Page Styles
+   ========================= */
+
+/* This file assumes common.css is loaded.
+   JoinNow page uses the same unified inputs from common.css
+*/
+
+.gv-join-wrap{
+  display:grid;
+  gap: 14px;
+}
+
+@media (min-width: 900px){
+  .gv-join-wrap{
+    grid-template-columns: 1fr 1fr; /* form + info card */
+    align-items:start;
+  }
+}
+
+.gv-join-info{
+  padding: 18px;
+}
+
+.gv-join-info h3{
+  margin: 0 0 10px;
+  font-size: 18px;
+}
+
+.gv-join-info p{
+  margin: 0 0 10px;
+  color: var(--muted);
+  line-height: 1.55;
+}

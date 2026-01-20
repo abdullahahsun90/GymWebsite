@@ -1,0 +1,138 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>GymVerse — Appointment</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="../css/home.css">
+<link rel="stylesheet" href="../css/appointments.css">
+</head>
+<body>
+
+  <!-- Navbar -->
+  <header class="gv-nav">
+    <div class="gv-container">
+      <div class="gv-nav-inner">
+        <div class="gv-brand" onclick="goTo('index.html')">
+          <div class="gv-logo">GV</div>
+          <b>GymVerse</b>
+        </div>
+
+        <div class="gv-links">
+          <button class="gv-link" onclick="goTo('index.html')">Home</button>
+          <button class="gv-link" onclick="goTo('packages.html')">Packages</button>
+          <button class="gv-link" onclick="goTo('joinnow.html')">Join Now</button>
+        </div>
+
+        <div class="gv-actions">
+          <button class="gv-btn" onclick="goTo('appointment.html')">Book Appointment</button>
+          <button class="gv-btn gv-btn-primary" onclick="goTo('joinnow.html')">Join Now</button>
+        </div>
+
+        <button class="gv-btn gv-menu" id="gvMenuBtn">☰</button>
+      </div>
+    </div>
+
+    <div class="gv-mobile" id="gvMobileMenu">
+      <a href="index.html">Home</a>
+      <a href="packages.html">Packages</a>
+      <a href="joinnow.html">Join Now</a>
+      <a class="primary" href="appointment.html">Book Appointment</a>
+    </div>
+  </header>
+
+  <main class="gv-section">
+    <div class="gv-container">
+      <h1 class="gv-section-title">Book Appointment</h1>
+      <p class="gv-section-sub">Appointments save into localStorage as <b>gv_appointments</b> with status <b>Pending</b>.</p>
+
+      <div class="gv-card">
+        <form class="gv-form" id="apptForm">
+          <div class="gv-grid cols-2">
+            <div class="gv-field">
+              <label>Name</label>
+              <input id="aName" type="text" placeholder="Your name" />
+            </div>
+
+            <div class="gv-field">
+              <label>Email</label>
+              <input id="aEmail" type="email" placeholder="name@email.com" />
+            </div>
+
+            <div class="gv-field">
+              <label>Phone</label>
+              <input id="aPhone" type="tel" placeholder="+92..." />
+            </div>
+
+            <div class="gv-field">
+              <label>Trainer</label>
+              <select id="trainerSelect"></select>
+              <div class="gv-help">Trainers come from localStorage (auto seeded).</div>
+            </div>
+
+            <div class="gv-field">
+              <label>Date</label>
+              <input id="aDate" type="date" />
+            </div>
+
+            <div class="gv-field">
+              <label>Time</label>
+              <input id="aTime" type="time" />
+            </div>
+
+            <div class="gv-field" style="grid-column:1/-1;">
+              <label>Purpose</label>
+              <select id="aPurpose">
+                <option value="">Select...</option>
+                <option>Weight Loss</option>
+                <option>Muscle Gain</option>
+                <option>Strength</option>
+                <option>Yoga / Mobility</option>
+                <option>General Fitness</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="gv-field" style="margin-top:14px;">
+            <label>Message (optional)</label>
+            <textarea id="aMessage" placeholder="Any detail you want trainer to know..."></textarea>
+          </div>
+
+          <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:14px;">
+            <button class="gv-btn gv-btn-primary" type="submit">Book</button>
+            <button class="gv-btn" type="button" onclick="goTo('index.html')">Back to Home</button>
+          </div>
+
+          <div id="apptMsg" class="gv-help" style="margin-top:12px;"></div>
+        </form>
+      </div>
+    </div>
+  </main>
+
+  <!-- Footer -->
+  <footer class="gv-footer">
+    <div class="gv-container">
+      <div class="gv-foot-bottom">
+        <div>© <span id="year"></span> GymVerse</div>
+        <div style="display:flex;gap:10px;flex-wrap:wrap;">
+          <a href="index.html">Home</a>
+          <span style="opacity:.4;">•</span>
+          <a href="joinnow.html">Join</a>
+          <span style="opacity:.4;">•</span>
+          <a href="packages.html">Packages</a>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <script>document.getElementById("year").textContent = new Date().getFullYear();</script>
+ <script src="../js/appointment.js"></script>
+
+
+</body>
+</html>

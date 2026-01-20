@@ -1,0 +1,37 @@
+/* =========================
+   Appointment Page Styles
+   ========================= */
+
+/* This file assumes common.css is loaded.
+   Appointment page typically uses:
+   - .gv-card for container
+   - .gv-form, .gv-grid, .gv-field from common
+*/
+
+.gv-appointment-wrap{
+  display:grid;
+  gap: 14px;
+}
+
+@media (min-width: 900px){
+  .gv-appointment-wrap{
+    grid-template-columns: 1.1fr .9fr; /* form + summary */
+    align-items:start;
+  }
+}
+
+/* Optional: right summary card styling (if you have it) */
+.gv-appointment-summary{
+  padding: 18px;
+}
+
+.gv-appointment-summary h3{
+  margin: 0 0 10px;
+  font-size: 18px;
+}
+
+.gv-appointment-summary p{
+  margin: 0 0 10px;
+  color: var(--muted);
+  line-height: 1.55;
+}
