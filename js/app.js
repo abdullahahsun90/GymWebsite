@@ -1,15 +1,12 @@
 /* =========================
-   GymVerse — Core (Shared)
-   - LocalStorage helpers
-   - Keys
-   - Seed data
-   - goTo() for navbar/footer hash links
-   - Common utils (escape, id, num)
+   GymVerse — Shared JS
+   (Slider + Mobile Menu + LocalStorage Forms)
    ========================= */
 
 (function () {
   "use strict";
 
+  // ---------- Helpers ----------
   const $ = (sel, root = document) => root.querySelector(sel);
   const $$ = (sel, root = document) => Array.from(root.querySelectorAll(sel));
 
@@ -27,6 +24,7 @@
     }
   };
 
+  // ---------- Keys ----------
   const KEYS = {
     PACKAGES: "gv_packages",
     TRAINERS: "gv_trainers",
@@ -34,37 +32,7 @@
     APPTS: "gv_appointments"
   };
 
-  function num(v) {
-    const n = Number(v);
-    if (!Number.isFinite(n)) return v ?? "";
-    return n.toLocaleString("en-PK");
-  }
-
-  function cryptoId() {
-    try {
-      return (crypto && crypto.randomUUID)
-        ? crypto.randomUUID()
-        : "id-" + Math.random().toString(16).slice(2);
-    } catch {
-      return "id-" + Math.random().toString(16).slice(2);
-    }
-  }
-
-  function escapeHtml(s) {
-    return String(s ?? "").replace(/[&<>"']/g, (m) => ({
-      "&": "&amp;",
-      "<": "&lt;",
-      ">": "&gt;",
-      '"': "&quot;",
-      "'": "&#039;"
-    }[m]));
-  }
-
-  function escapeAttr(s) {
-    return escapeHtml(s).replace(/"/g, "&quot;");
-  }
-
-  // ---------- Seed data (only if missing) ----------
+  // ---------- Seed Data (only if not exists) ----------
   function seedIfMissing() {
     const pkgs = LS.get(KEYS.PACKAGES, null);
     const trs = LS.get(KEYS.TRAINERS, null);
@@ -104,16 +72,13 @@
     }
   }
 
-  // ---------- Navigation helper (footer hash links fix) ----------
+  // ---------- Navigation helper (fix footer hash links issue) ----------
   window.goTo = function (ref) {
     if (!ref) return;
 
+    // If anchor
     if (ref.startsWith("#")) {
-      const isIndex =
-        location.pathname.endsWith("index.html") ||
-        location.pathname === "/" ||
-        location.pathname.endsWith("/");
-
+      const isIndex = location.pathname.endsWith("index.html") || location.pathname === "/" || location.pathname.endsWith("/");
       if (isIndex) {
         const el = document.querySelector(ref);
         if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
@@ -126,34 +91,6 @@
     location.href = ref;
   };
 
-  // expose to other JS files
-  window.GV = {
-    $, $$, LS, KEYS,
-    num, cryptoId, escapeHtml, escapeAttr,
-    seedIfMissing
-  };
-
-  // run seed on every page safely
-  seedIfMissing();
-
-})();
-
-
-
-
-
-/* =========================
-   GymVerse — Home Page JS
-   - Mobile menu
-   - Slider
-   - Trainers rendering
-   ========================= */
-
-(function () {
-  "use strict";
-
-  const { $, $$, LS, KEYS, escapeHtml } = window.GV;
-
   // ---------- Mobile menu ----------
   function initMobileMenu() {
     const btn = $("#gvMenuBtn");
@@ -161,6 +98,7 @@
     if (!btn || !dd) return;
 
     btn.addEventListener("click", () => dd.classList.toggle("open"));
+    // close on click
     $$("#gvMobileMenu a").forEach(a => {
       a.addEventListener("click", () => dd.classList.remove("open"));
     });
@@ -208,6 +146,7 @@
     prev.addEventListener("click", prevSlide);
     next.addEventListener("click", nextSlide);
 
+    // autoplay
     function start() {
       stop();
       timer = setInterval(() => goToSlide(idx + 1), AUTOPLAY);
@@ -225,7 +164,6 @@
 
     // swipe
     let down = false, sx = 0, cx = 0;
-
     function onDown(x) {
       down = true; sx = x; cx = x;
       stop();
@@ -258,6 +196,7 @@
     window.addEventListener("mousemove", (e) => onMove(e.clientX));
     window.addEventListener("mouseup", onUp);
 
+    // init
     goToSlide(0);
     start();
   }
@@ -269,13 +208,7 @@
 
     const trainers = LS.get(KEYS.TRAINERS, []);
     wrap.innerHTML = trainers.map(t => {
-      const initials = (t.name || "T")
-        .split(" ")
-        .slice(0, 2)
-        .map(x => x[0])
-        .join("")
-        .toUpperCase();
-
+      const initials = (t.name || "T").split(" ").slice(0,2).map(x => x[0]).join("").toUpperCase();
       const tags = Array.isArray(t.tags) ? t.tags : [];
       return `
         <div class="gv-trainer">
@@ -294,9 +227,178 @@
     }).join("");
   }
 
+  // ---------- Render packages on packages page ----------
+  function renderPackages() {
+    const wrap = $("#packagesList");
+    if (!wrap) return;
+
+    const packages = LS.get(KEYS.PACKAGES, []);
+    wrap.innerHTML = packages.map(p => `
+      <div class="gv-package">
+        <h3 style="margin:0;font-weight:1000;">${escapeHtml(p.name)}</h3>
+        <div class="gv-price">
+          <span class="gv-old">PKR ${num(p.oldPrice)}</span>
+          <span class="gv-new">PKR ${num(p.newPrice)}</span>
+        </div>
+        <p class="gv-pack-desc">${escapeHtml(p.desc || "")}</p>
+        <ul class="gv-ul">
+          ${(p.features || []).map(f => `<li>${escapeHtml(f)}</li>`).join("")}
+        </ul>
+        <div style="margin-top:14px;display:flex;gap:10px;flex-wrap:wrap;">
+          <button class="gv-btn gv-btn-primary" onclick="goTo('joinnow.html')">Join Now</button>
+          <button class="gv-btn" onclick="goTo('appointment.html')">Book Appointment</button>
+        </div>
+      </div>
+    `).join("");
+  }
+
+  // ---------- Populate selects (trainers/packages) ----------
+  function fillSelectOptions() {
+    const trainerSel = $("#trainerSelect");
+    if (trainerSel) {
+      const trainers = LS.get(KEYS.TRAINERS, []);
+      trainerSel.innerHTML = `<option value="">Select trainer...</option>` +
+        trainers.map(t => `<option value="${escapeAttr(t.name)}">${escapeHtml(t.name)} — ${escapeHtml(t.specialty || "")}</option>`).join("");
+    }
+
+    const planSel = $("#planSelect");
+    if (planSel) {
+      const packages = LS.get(KEYS.PACKAGES, []);
+      planSel.innerHTML = `<option value="">Select plan...</option>` +
+        packages.map(p => `<option value="${escapeAttr(p.name)}">${escapeHtml(p.name)} (PKR ${num(p.newPrice)})</option>`).join("");
+    }
+  }
+
+  // ---------- Join Now form ----------
+  function initJoinForm() {
+    const form = $("#joinForm");
+    if (!form) return;
+
+    const msg = $("#joinMsg");
+
+    form.addEventListener("submit", (e) => {
+      e.preventDefault();
+      if (msg) msg.textContent = "";
+
+      const data = {
+        id: cryptoId(),
+        createdAt: new Date().toISOString(),
+        fullName: $("#fullName")?.value.trim(),
+        email: $("#email")?.value.trim(),
+        phone: $("#phone")?.value.trim(),
+        gender: $("#gender")?.value,
+        age: $("#age")?.value.trim(),
+        plan: $("#planSelect")?.value,
+        notes: $("#notes")?.value.trim()
+      };
+
+      // basic validation
+      const err = validateJoin(data);
+      if (err) {
+        if (msg) { msg.style.color = "var(--danger)"; msg.textContent = err; }
+        return;
+      }
+
+      const list = LS.get(KEYS.MEMBERS, []);
+      list.push(data);                 // IMPORTANT: push (does not replace old)
+      LS.set(KEYS.MEMBERS, list);
+
+      form.reset();
+      if (msg) { msg.style.color = "var(--ok)"; msg.textContent = "✅ Joined successfully! (Saved in localStorage)"; }
+    });
+  }
+
+  function validateJoin(d) {
+    if (!d.fullName) return "Full Name is required.";
+    if (!d.email || !/^\S+@\S+\.\S+$/.test(d.email)) return "Valid Email is required.";
+    if (!d.phone) return "Phone is required.";
+    if (!d.plan) return "Please select a plan.";
+    return "";
+  }
+
+  // ---------- Appointment form ----------
+  function initAppointmentForm() {
+    const form = $("#apptForm");
+    if (!form) return;
+
+    const msg = $("#apptMsg");
+
+    form.addEventListener("submit", (e) => {
+      e.preventDefault();
+      if (msg) msg.textContent = "";
+
+      const data = {
+        id: cryptoId(),
+        createdAt: new Date().toISOString(),
+        memberName: $("#aName")?.value.trim(),
+        email: $("#aEmail")?.value.trim(),
+        phone: $("#aPhone")?.value.trim(),
+        date: $("#aDate")?.value,
+        time: $("#aTime")?.value,
+        trainer: $("#trainerSelect")?.value,
+        purpose: $("#aPurpose")?.value,
+        message: $("#aMessage")?.value.trim(),
+        status: "Pending"
+      };
+
+      const err = validateAppt(data);
+      if (err) {
+        if (msg) { msg.style.color = "var(--danger)"; msg.textContent = err; }
+        return;
+      }
+
+      const list = LS.get(KEYS.APPTS, []);
+      list.push(data);
+      LS.set(KEYS.APPTS, list);
+
+      form.reset();
+      if (msg) { msg.style.color = "var(--ok)"; msg.textContent = "✅ Appointment booked! Status: Pending (Saved in localStorage)"; }
+    });
+  }
+
+  function validateAppt(d) {
+    if (!d.memberName) return "Name is required.";
+    if (!d.email || !/^\S+@\S+\.\S+$/.test(d.email)) return "Valid Email is required.";
+    if (!d.phone) return "Phone is required.";
+    if (!d.date) return "Date is required.";
+    if (!d.time) return "Time is required.";
+    if (!d.trainer) return "Please select a trainer.";
+    if (!d.purpose) return "Purpose is required.";
+    return "";
+  }
+
+  // ---------- Utils ----------
+  function num(v) {
+    const n = Number(v);
+    if (!Number.isFinite(n)) return v ?? "";
+    return n.toLocaleString("en-PK");
+  }
+
+  function cryptoId() {
+    try {
+      return (crypto && crypto.randomUUID) ? crypto.randomUUID() : ("id-" + Math.random().toString(16).slice(2));
+    } catch {
+      return "id-" + Math.random().toString(16).slice(2);
+    }
+  }
+
+  function escapeHtml(s) {
+    return String(s ?? "").replace(/[&<>"']/g, (m) => ({
+      "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"
+    }[m]));
+  }
+  function escapeAttr(s) {
+    return escapeHtml(s).replace(/"/g, "&quot;");
+  }
+
   // ---------- Boot ----------
+  seedIfMissing();
   initMobileMenu();
   initSlider();
   renderTrainers();
+  renderPackages();
+  fillSelectOptions();
+  initJoinForm();
+  initAppointmentForm();
 
 })();
