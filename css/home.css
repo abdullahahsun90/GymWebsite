@@ -382,37 +382,72 @@ button{ font-family: inherit; }
   gap: 12px;
 }
 
-/* Right visual block */
+/* Right visual block (CRISP image) */
 .gv-visual{
   border-radius: 18px;
   border: 1px solid rgba(255,255,255,.12);
-  background: #0b0f24;
   height: clamp(230px, 32vw, 420px);
   overflow:hidden;
   position: relative;
+  background: #0b0f24;
 }
+
+/* The image fills the block */
+.gv-visual-img{
+  width: 100%;
+  height: 100%;
+  display: block;
+  object-fit: cover;
+
+  /* crisp look */
+  transform: scale(1.01);
+  filter: contrast(1.08) saturate(1.10) brightness(1.02);
+  image-rendering: auto;
+
+  transition: transform .7s ease, filter .7s ease;
+}
+
+/* Nice zoom on hover */
+.gv-slide:hover .gv-visual-img{
+  transform: scale(1.05);
+  filter: contrast(1.12) saturate(1.15) brightness(1.03);
+}
+
+/* OPTIONAL: glow animation ABOVE image (reduce opacity to avoid haze) */
 .gv-visual::before{
   content:"";
   position:absolute;
   inset:-40%;
+  z-index: 1;
   background: conic-gradient(from 220deg,
     rgba(33,212,168,.00),
-    rgba(33,212,168,.35),
-    rgba(107,92,255,.28),
-    rgba(33,212,168,.15),
+    rgba(33,212,168,.28),
+    rgba(107,92,255,.20),
+    rgba(33,212,168,.14),
     rgba(33,212,168,.00));
   animation: gvSpin 9s linear infinite;
+  opacity: .35;        /* LOWER = clearer */
+  pointer-events:none;
 }
+
+/* DARK overlay for readability (NO blur) */
 .gv-visual::after{
   content:"";
   position:absolute;
   inset:0;
+  z-index: 2;
+
+  /* no blur, only contrast overlay */
   background:
-    radial-gradient(800px 500px at 20% 20%, rgba(255,255,255,.10), transparent 58%),
-    radial-gradient(700px 450px at 80% 30%, rgba(255,255,255,.08), transparent 58%),
     linear-gradient(180deg, rgba(0,0,0,.10), rgba(0,0,0,.55));
-  backdrop-filter: blur(10px);
+
+  pointer-events:none;
 }
+
+/* Entrance animation stays */
+.gv-slide .gv-visual{ opacity:0; transform: scale(.985); transition: .7s ease; }
+.gv-slide.is-active .gv-visual{ opacity:1; transform: scale(1); }
+
 @keyframes gvSpin{ to{ transform: rotate(360deg);} }
 
 /* Slide entrance */
@@ -517,6 +552,38 @@ button{ font-family: inherit; }
 @media (max-width: 899px){
   .gv-col-6,.gv-col-4,.gv-col-8,.gv-col-12{ grid-column: auto; }
 }
+/* IMPORTANT: make image fill the gv-photo card */
+.gv-photo{
+  position: relative;
+  overflow: hidden;
+}
+
+/* If you use <img> inside .gv-photo */
+.gv-photo-img{
+  width: 100%;
+  height: 100%;
+  display: block;
+  object-fit: cover;
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+}
+
+/* Put caption above image */
+.gv-photo .cap{
+  z-index: 2;
+}
+
+/* Optional: overlay for caption readability */
+.gv-photo::after{
+  content:"";
+  position:absolute;
+  inset:0;
+  z-index:1;
+  background: linear-gradient(180deg, rgba(0,0,0,.05), rgba(0,0,0,.45));
+  pointer-events:none;
+}
+
 
 /* Trainers (if trainers are shown on home) */
 .gv-trainers{
